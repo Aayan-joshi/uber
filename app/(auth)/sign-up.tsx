@@ -10,6 +10,7 @@ import CustomButton from "@/components/CustomButton";
 import { Link, useRouter } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { ReactNativeModal } from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -65,7 +66,14 @@ const SignUp = () => {
       });
 
       if (completeSignUp.status === "complete") {
-        //TODO: Create a DB user
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: completeSignUp.createdUserId,
+          }),
+        });
 
         await setActive({ session: completeSignUp.createdSessionId });
         setVerification({ ...verification, state: "success" });
